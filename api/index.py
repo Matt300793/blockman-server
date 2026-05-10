@@ -1,24 +1,28 @@
-from flask import Flask, request, jsonify
-import sys
 import os
+import sys
+from flask import Flask, request, jsonify
 
-# Define 'app' at the top level
+# This line is crucial for Vercel to find your other folders
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+# This MUST be at the top level for Vercel to see it
 app = Flask(__name__)
 
+# --- HOME ROUTE ---
 @app.route('/')
 def home():
-    return jsonify({"status": "Server is running"})
+    return jsonify({
+        "status": "Server Active",
+        "owner": "Evander_Mod",
+        "target_game": "Blockman Go 1.13.1"
+    })
 
-# Add your other routes below...
-
-
-# --- NEW: UPDATE CHECK ROUTE ---
-# This matches common patterns for Blockman Go update checks
+# --- UPDATE CHECK ROUTE ---
+# Handles the common paths older BMG versions use to check for updates
 @app.route('/update/check', methods=['GET', 'POST'])
 @app.route('/version.xml', methods=['GET'])
 @app.route('/config/update', methods=['GET', 'POST'])
 def check_update():
-    # We return a JSON that says 'no update' or 'latest version'
     return jsonify({
         "code": 200,
         "message": "success",
@@ -26,7 +30,7 @@ def check_update():
             "hasUpdate": False,
             "version": "1.13.1",
             "downloadUrl": "",
-            "description": "No update needed"
+            "description": "Latest version verified"
         }
     })
 
@@ -44,19 +48,13 @@ def handle_login():
     })
 
 # --- CATCH-ALL ROUTE ---
-# If the game asks for a URL we didn't plan for, it still gets a 'Success'
-@app.route('/', defaults={'path': ''})
-@app.route('/<path:path>')
+# This ensures that ANY link the game hits returns a 200 OK status
+@app.route('/<path:path>', methods=['GET', 'POST'])
 def catch_all(path):
-    return jsonify({"code": 200, "status": "ok", "path": path})
-            "nickName": "Evander_Mod",
-            "level": 100
-        }
+    return jsonify({
+        "code": 200, 
+        "status": "Handled", 
+        "requested_path": path
     })
 
-# --- CATCH-ALL ROUTE ---
-@app.route('/user/api/v1/<path:path>', methods=['GET', 'POST', 'PUT', 'DELETE'])
-def catch_all(path):
-    return jsonify({"code": 200, "message": "Handled by Vercel", "path": path})
-
-# DO NOT add app.run() for Vercel
+# IMPORTANT: Do NOT add app.run() here for Vercel
