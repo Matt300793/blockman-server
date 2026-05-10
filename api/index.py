@@ -9,16 +9,16 @@ app = Flask(__name__)
 # --- 1. CONFIG PATH (The one from your log) ---
 @app.route('/config/files/blockmods-config', methods=['GET', 'POST', 'OPTIONS'])
 def blockmods_config():
-    # Simple JSON string to satisfy the DEX check
-    raw_json = '{"code":200,"status":"success","data":{"enable":true}}'
+    # We use a very compact JSON string with NO spaces
+    raw_json = '{"code":200,"msg":"success","data":{"is_mod":true,"status":1}}'
     return Response(raw_json, status=200, mimetype='application/json')
 
-# --- 2. LOGIN/AUTH PATH (The other one from your log) ---
-@app.route('/user/api/v1/app/login', methods=['GET', 'POST', 'OPTIONS'])
-@app.route('/user/api/v1/app/auth', methods=['GET', 'POST', 'OPTIONS'])
-def auth_check():
-    raw_json = '{"code":200,"message":"success","data":{"userId":"10001","token":"mod-777"}}'
+@app.route('/user/api/v1/app/login', methods=['POST', 'OPTIONS'])
+def login_route():
+    # Compact login response
+    raw_json = '{"code":200,"message":"success","data":{"userId":"10001","ticket":"v-mod-777"}}'
     return Response(raw_json, status=200, mimetype='application/json')
+
 
 # --- 3. THE "SILENCE" HEADERS ---
 @app.after_request
