@@ -2,38 +2,48 @@ import os
 import sys
 from flask import Flask, request, jsonify
 
-# FIX: This allows the script to find the 'blockmango' folder in the root
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-from blockmango.user import User
+# from blockmango.user import User  # Keeping this commented if you aren't using the wrapper yet
 
 app = Flask(__name__)
 
-# --- LOGIN ROUTE ---
-@app.route('/user/api/v1/app/login', methods=['POST'])
-def handle_login():
-    data = request.json
-    print(f"Login attempt for: {data.get('uid')}")
-    
+# --- NEW: UPDATE CHECK ROUTE ---
+# This matches common patterns for Blockman Go update checks
+@app.route('/update/check', methods=['GET', 'POST'])
+@app.route('/version.xml', methods=['GET'])
+@app.route('/config/update', methods=['GET', 'POST'])
+def check_update():
+    # We return a JSON that says 'no update' or 'latest version'
     return jsonify({
         "code": 200,
         "message": "success",
         "data": {
-            "userId": data.get('uid') or "10001",
+            "hasUpdate": False,
+            "version": "1.13.1",
+            "downloadUrl": "",
+            "description": "No update needed"
+        }
+    })
+
+# --- LOGIN ROUTE ---
+@app.route('/user/api/v1/app/login', methods=['POST'])
+def handle_login():
+    return jsonify({
+        "code": 200,
+        "message": "success",
+        "data": {
+            "userId": "10001",
             "accessToken": "v-mod-token-777",
             "userName": "Evander_Mod"
         }
     })
 
-# --- USER INFO ROUTE ---
-@app.route('/user/api/v1/user/info', methods=['GET', 'POST'])
-def get_user_info():
-    return jsonify({
-        "code": 200,
-        "data": {
-            "gold": 1000000,
-            "gcube": 999999,
-            "diamond": 50000,
+# --- CATCH-ALL ROUTE ---
+# If the game asks for a URL we didn't plan for, it still gets a 'Success'
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def catch_all(path):
+    return jsonify({"code": 200, "status": "ok", "path": path})
             "nickName": "Evander_Mod",
             "level": 100
         }
