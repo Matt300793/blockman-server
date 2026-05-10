@@ -1,6 +1,10 @@
 {
+  "version": 2,
   "cleanUrls": false,
   "trailingSlash": false,
+  "github": {
+    "silent": true
+  },
   "routes": [
     {
       "src": "/(.*)",
@@ -8,7 +12,8 @@
       "headers": {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type"
+        "Access-Control-Allow-Headers": "Content-Type",
+        "x-robots-tag": "noindex"
       },
       "continue": true
     }
