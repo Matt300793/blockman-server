@@ -1,31 +1,47 @@
 import os
+import sys
 from flask import Flask, request, jsonify
-# This imports the User class you just showed me
-from blockmango.user import User 
+
+# FIX: This allows the script to find the 'blockmango' folder in the root
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from blockmango.user import User
 
 app = Flask(__name__)
 
-# This route handles your entire list of User APIs automatically
-@app.route('/user/api/v1/<path:path>', methods=['GET', 'POST', 'PUT', 'DELETE'])
-def handle_bmg_api(path):
-    print(f"📡 Request: {request.method} -> /user/api/v1/{path}")
+# --- LOGIN ROUTE ---
+@app.route('/user/api/v1/app/login', methods=['POST'])
+def handle_login():
+    data = request.json
+    print(f"Login attempt for: {data.get('uid')}")
     
-    # Custom response for the 'user/info' path in your list
-    if path == "user/info":
-        return jsonify({
-            "code": 200,
-            "data": {
-                "userId": "777777",
-                "nickName": "Evander_Dev",
-                "gcube": 999999,
-                "gold": 1000000
-            }
-        })
+    return jsonify({
+        "code": 200,
+        "message": "success",
+        "data": {
+            "userId": data.get('uid') or "10001",
+            "accessToken": "v-mod-token-777",
+            "userName": "Evander_Mod"
+        }
+    })
 
-    # Default success response for the rest of the list
-    return jsonify({"code": 200, "message": "success", "data": {}})
+# --- USER INFO ROUTE ---
+@app.route('/user/api/v1/user/info', methods=['GET', 'POST'])
+def get_user_info():
+    return jsonify({
+        "code": 200,
+        "data": {
+            "gold": 1000000,
+            "gcube": 999999,
+            "diamond": 50000,
+            "nickName": "Evander_Mod",
+            "level": 100
+        }
+    })
 
-if __name__ == '__main__':
-    # Required for Koyeb Free Tier
-    port = int(os.environ.get("PORT", 8000))
-    app.run(host='0.0.0.0', port=port)
+# --- CATCH-ALL ROUTE ---
+@app.route('/user/api/v1/<path:path>', methods=['GET', 'POST', 'PUT', 'DELETE'])
+def catch_all(path):
+    return jsonify({"code": 200, "message": "Handled by Vercel", "path": path})
+
+# DO NOT add app.run() for Vercel
