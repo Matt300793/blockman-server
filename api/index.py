@@ -1,11 +1,16 @@
-import os
-import sys
 from flask import Flask, request, jsonify
+import sys
+import os
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-# from blockmango.user import User  # Keeping this commented if you aren't using the wrapper yet
-
+# Define 'app' at the top level
 app = Flask(__name__)
+
+@app.route('/')
+def home():
+    return jsonify({"status": "Server is running"})
+
+# Add your other routes below...
+
 
 # --- NEW: UPDATE CHECK ROUTE ---
 # This matches common patterns for Blockman Go update checks
