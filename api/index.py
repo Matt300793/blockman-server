@@ -1,25 +1,33 @@
 import os
 import sys
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, make_response
 
-# This line is crucial for Vercel to find your other folders
+# Ensures Vercel can see your 'blockmango' folder if you have one
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-# This MUST be at the top level for Vercel to see it
 app = Flask(__name__)
 
-# --- HOME ROUTE ---
+# --- HELPING OLDER DEVICES ---
+@app.after_request
+def add_headers(response):
+    # These headers tell the Poco C65 it's okay to accept the data
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
+    response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
+    return response
+
+# --- HOME ROUTE (Test this in your browser first) ---
 @app.route('/')
 def home():
     return jsonify({
         "status": "Server Active",
-        "owner": "Evander_Mod",
-        "target_game": "Blockman Go 1.13.1"
+        "modder": "Evander_Mod",
+        "note": "Use HTTPS for Vercel"
     })
 
 # --- UPDATE CHECK ROUTE ---
-# Handles the common paths older BMG versions use to check for updates
-@app.route('/update/check', methods=['GET', 'POST'])
+# If this returns 200, the "No Internet" should stop
+@app.route('/update/check', methods=['GET', 'POST', 'OPTIONS'])
 @app.route('/version.xml', methods=['GET'])
 @app.route('/config/update', methods=['GET', 'POST'])
 def check_update():
@@ -30,12 +38,12 @@ def check_update():
             "hasUpdate": False,
             "version": "1.13.1",
             "downloadUrl": "",
-            "description": "Latest version verified"
+            "description": "Latest version"
         }
     })
 
 # --- LOGIN ROUTE ---
-@app.route('/user/api/v1/app/login', methods=['POST'])
+@app.route('/user/api/v1/app/login', methods=['POST', 'OPTIONS'])
 def handle_login():
     return jsonify({
         "code": 200,
@@ -48,13 +56,13 @@ def handle_login():
     })
 
 # --- CATCH-ALL ROUTE ---
-# This ensures that ANY link the game hits returns a 200 OK status
-@app.route('/<path:path>', methods=['GET', 'POST'])
+# If the game asks for any other link, we say "200 OK"
+@app.route('/<path:path>', methods=['GET', 'POST', 'OPTIONS'])
 def catch_all(path):
     return jsonify({
         "code": 200, 
-        "status": "Handled", 
-        "requested_path": path
+        "status": "Success", 
+        "path": path
     })
 
-# IMPORTANT: Do NOT add app.run() here for Vercel
+# Do NOT use app.run() here
