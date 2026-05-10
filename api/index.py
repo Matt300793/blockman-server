@@ -12,7 +12,9 @@ def add_headers(response):
     response.headers['Access-Control-Allow-Origin'] = '*'
     response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
     response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
-    response.headers['Content-Type'] = 'application/json'
+    # Adding this tells the game the data is finished sending
+    response.headers['Connection'] = 'keep-alive'
+    response.headers['Keep-Alive'] = 'timeout=5, max=100'
     return response
 
 @app.route('/')
