@@ -1,5 +1,5 @@
 {
-  "name": "bmf-api",
+  "name": "blockman-server",
   "version": "1.0.0",
   "description": "Blockman Forge APIs for Blockman GO v1.9.17",
   "main": "src/app.js",
