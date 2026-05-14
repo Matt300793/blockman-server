@@ -15,7 +15,7 @@ dressing.init();
 
 require("@dispatcher/room")();  // Uncomment if necessary
 
-const logger = require("@common/logger");
+const logger = require("./common/logger");
 const config = require("@config/host");
 
 // Middleware to explicitly set Keep-Alive header
