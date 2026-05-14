@@ -1,9 +1,9 @@
 const express = require("express");
 
-const logger = require("@common/logger");
-const responses = require("@common/responses");
-const multer = require("@common/multer");
-const middlewares = require("@common/middlewares");
+const logger = require("./common/logger");
+const responses = require("./common/responses");
+const multer = require("./common/multer");
+const middlewares = require("./common/middlewares");
 const modules = require("@config/modules");
 const requirements = require("@config/requirements");
 
